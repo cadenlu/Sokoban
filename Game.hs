@@ -83,6 +83,14 @@ data Action = Move MoveDirection | Quit
 
 act :: Action -> GameState -> Maybe GameState
 act (Move dir) state = error "not yet implemented!" -- TODO
+ {-
+  get new player location (after movement)
+  check if new player location is a wall or a box
+    if wall, don't do anything
+    if its a box check if location after box is a wall
+    otherwise move the box
+    if player moves into empty tile, playerLocation = newPlayerLocation
+ -}
 act Quit _ = Nothing
 
 won :: GameState -> Bool
