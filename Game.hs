@@ -86,7 +86,11 @@ act (Move dir) state = error "not yet implemented!" -- TODO
 act Quit _ = Nothing
 
 won :: GameState -> Bool
-won state = error "not yet implemented!" -- TODO
+won state = all (`onStorage` state) (boxLocations state)
+
+-- check if a given box location is on a Storage tile in the game state (helper for won)
+onStorage :: Coord -> GameState -> Bool
+onStorage loc state = tileAt (levelMap state) loc == Storage
 
 
 class GameInterface i where
@@ -94,4 +98,3 @@ class GameInterface i where
   render :: i -> GameState -> IO ()
   -- await next player input relevent to the game
   getInput :: i -> IO Action
-
