@@ -80,30 +80,29 @@ data GameState = GameState
 data MoveDirection = MLeft | MRight | MUp | MDown
 data Action = Move MoveDirection | Quit
 
-{- act function : 
-  get new player location (after movement)
-  check if new player location is a wall or a box
-    if wall, don't do anything
-    if its a box check if location after box is a wall
-    otherwise move the box
-    if player moves into empty tile, playerLocation = newPlayerLocation
- -}
+
+-- processes actions given by user and updates the GameState
 act :: Action -> GameState -> Maybe GameState
 act (Move dir) state =
-  let player = playerLocation state -- gets playerLocation
-      boxes = boxLocations state    -- gets boxLocations
-      newPos = moveInDirection player dir  -- gets new position after moving
+  let player = playerLocation state             -- gets playerLocation
+      boxes = boxLocations state                -- gets boxLocations
+      newPos = moveInDirection player dir       -- gets new position after moving
       newTile = tileAt (levelMap state) newPos  -- gets tile at the new position
-      (boxMoved, newBoxes) = moveBoxIfPossible boxes newPos dir -- TODO
+      (boxMoved, newBoxes) = moveBoxIfPossible boxes newPos dir -- TODO (function that moves boxes if possible)
   in case newTile of
-    Wall -> Just state -- no change if we hit a wall
-    Empty -> Just state { playerLocation = newPos, boxLocations = boxes } -- boxes don't change, but newPos after moving
-    Storage -> Just state { playerLocation = newPos, boxLocations = newBoxes } -- boxes do change
+    Wall -> Just state
+    _ -> -- either Empty or Storage
+      if boxMoved
+        then Just state { playerLocation = newPos, boxLocations = newBoxes } -- update both player and box locations
+        else Just state { playerLocation = newPos }                          -- not update boxes, but move player
 act Quit _ = Nothing
 
 
 -- moves box if box movement is possible
+  -- the function takes in our list of boxLocations and our newPos and dir (from act) and
+  -- returns if our box was moved, and our updated list of boxLocations
 moveBoxIfPossible :: [Coord] -> Coord -> Direction -> (Bool, [Coord]) -- TODO
+  -- check if newPos 'elem' boxLocations
 
 
 -- returns new coordinate after movement action (helper for act function)
