@@ -80,10 +80,7 @@ data GameState = GameState
 data MoveDirection = MLeft | MRight | MUp | MDown
 data Action = Move MoveDirection | Quit
 
-
-act :: Action -> GameState -> Maybe GameState
-act (Move dir) state = error "not yet implemented!" -- TODO
- {-
+{- act function : 
   get new player location (after movement)
   check if new player location is a wall or a box
     if wall, don't do anything
@@ -91,7 +88,31 @@ act (Move dir) state = error "not yet implemented!" -- TODO
     otherwise move the box
     if player moves into empty tile, playerLocation = newPlayerLocation
  -}
+act :: Action -> GameState -> Maybe GameState
+act (Move dir) state =
+  let player = playerLocation state -- gets playerLocation
+      boxes = boxLocations state    -- gets boxLocations
+      newPos = moveInDirection player dir  -- gets new position after moving
+      newTile = tileAt (levelMap state) newPos  -- gets tile at the new position
+      (boxMoved, newBoxes) = moveBoxIfPossible boxes newPos dir -- TODO
+  in case newTile of
+    Wall -> Just state -- no change if we hit a wall
+    Empty -> Just state { playerLocation = newPos, boxLocations = boxes } -- boxes don't change, but newPos after moving
+    Storage -> Just state { playerLocation = newPos, boxLocations = newBoxes } -- boxes do change
 act Quit _ = Nothing
+
+
+-- moves box if box movement is possible
+moveBoxIfPossible :: [Coord] -> Coord -> Direction -> (Bool, [Coord]) -- TODO
+
+
+-- returns new coordinate after movement action (helper for act function)
+moveInDirection :: Coord -> Move -> Coord
+moveInDirection (x,y) MUp    = (x, y-1)
+moveInDirection (x,y) MDown  = (x, y+1)
+moveInDirection (x,y) MLeft  = (x-1, y)
+moveInDirection (x,y) MRight = (x+1, y)
+
 
 won :: GameState -> Bool
 won state = all (`onStorage` state) (boxLocations state)
