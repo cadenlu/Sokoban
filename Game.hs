@@ -88,7 +88,7 @@ act (Move dir) state =
       boxes = boxLocations state                -- gets boxLocations
       newPos = moveInDirection player (Move dir)-- gets new position after moving
       newTile = tileAt (levelMap state) newPos  -- gets tile at the new position
-      (boxMoved, newBoxes) = moveBoxIfPossible state boxes newPos (Move dir) -- TODO (function that moves boxes if possible)
+      (boxMoved, newBoxes) = moveBoxIfPossible state boxes newPos (Move dir) -- if boxMoved, and updated boxLocations
   in case newTile of
     Wall -> Just state
     _ -> -- either Empty or Storage
@@ -127,6 +127,7 @@ moveInDirection (x,y) (Move MLeft)  = (x-1, y)
 moveInDirection (x,y) (Move MRight) = (x+1, y)
 
 
+-- true if all boxLocations are onStorage
 won :: GameState -> Bool
 won state = all (`onStorage` state) (boxLocations state)
 
