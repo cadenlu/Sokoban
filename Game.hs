@@ -107,8 +107,8 @@ moveBoxIfPossible state boxes boxPos (Move dir)
     where
       tileNext = tileAt (levelMap state) boxPosNext
       boxPosNext = moveInDirection boxPos (Move dir)
-      newBoxPos = moveInDirection boxPosNext (Move dir)
-      newBoxes = replace boxes boxPos newBoxPos
+      --newBoxPos = moveInDirection boxPosNext (Move dir)
+      newBoxes = replace boxes boxPos boxPosNext
 
 
 -- helper for moveBoxIfPossible (replaces boxPos with newBoxPos)
