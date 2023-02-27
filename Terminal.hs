@@ -1,10 +1,16 @@
 module Terminal where
 
 import Game
+import System.IO
 
 
 -- an interface with terminal input/output
 data TerminalInterface = TerminalInterface
+
+setupTerminalInterface :: IO TerminalInterface
+setupTerminalInterface = do
+  hSetBuffering stdin NoBuffering
+  return TerminalInterface
 
 displayCharAtCoord :: GameState -> Coord -> Char
 displayCharAtCoord state coord

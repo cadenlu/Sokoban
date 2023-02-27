@@ -22,8 +22,8 @@ testLevel = GameState
 
 main :: IO ()
 main = do
-  -- any setup?
-  gameLoop TerminalInterface testLevel
+  interface <- setupTerminalInterface
+  gameLoop interface testLevel
 
 gameLoop :: GameInterface i => i -> GameState -> IO ()
 gameLoop interface state = do
