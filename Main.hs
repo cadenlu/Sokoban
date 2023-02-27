@@ -34,6 +34,6 @@ gameLoop interface state = do
     let newState = act action state
     case newState of
       -- continue game
-      Just state' -> gameLoop interface state
+      Just state' -> gameLoop interface state'
       -- quit game
       Nothing -> putStrLn ""
