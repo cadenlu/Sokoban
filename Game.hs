@@ -88,26 +88,25 @@ act (Move dir) state =
       boxes = boxLocations state                -- gets boxLocations
       newPos = moveInDirection player (Move dir)-- gets new position after moving
       newTile = tileAt (levelMap state) newPos  -- gets tile at the new position
-      (boxMoved, newBoxes) = moveBoxIfPossible state boxes newPos (Move dir) -- if boxMoved, and updated boxLocations
+      (playerMoved, newBoxes) = moveBoxIfPossible state boxes newPos (Move dir) -- if playerMoved, and updated boxLocations
   in case newTile of
     Wall -> Just state
     _ -> -- either Empty or Storage
-      if boxMoved
+      if playerMoved
         then Just state { playerLocation = newPos, boxLocations = newBoxes } -- update both player and box locations
-        else Just state { playerLocation = newPos }                          -- not update boxes, but move player
+        else Just state                                                      -- unable to move in that direction
 act Quit _ = Nothing
 
 
--- moves box if the tile after the box is not a wall or another box, returns if our boxMoved, and our newBoxes locations
+-- moves box if the tile after the box is not a wall or another box, returns if the playerMoved, and our newBoxes locations
 moveBoxIfPossible :: GameState -> [Coord] -> Coord -> Action -> (Bool, [Coord])
 moveBoxIfPossible state boxes boxPos (Move dir)
-  | not (boxPos `elem` boxes) = (False, boxes)  
+  | not (boxPos `elem` boxes) = (True, boxes)
   | tileNext == Wall || boxPosNext `elem` boxes = (False, boxes)
   | otherwise = (True, newBoxes)
     where
       tileNext = tileAt (levelMap state) boxPosNext
       boxPosNext = moveInDirection boxPos (Move dir)
-      --newBoxPos = moveInDirection boxPosNext (Move dir)
       newBoxes = replace boxes boxPos boxPosNext
 
 
