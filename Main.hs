@@ -8,13 +8,6 @@ import Load
 import Terminal
 
 
-loadLevelFromFile :: FilePath -> IO GameState
-loadLevelFromFile path = do
-  contents <- readFile path
-  let (warnings, level) = loadLevelFromString contents
-  foldl (>>) (return ()) $ map (\msg -> putStrLn ("warning: " ++ msg)) warnings
-  return level
-
 main :: IO ()
 main = do
   levelPaths <- getArgs

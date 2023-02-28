@@ -1,4 +1,6 @@
-module Load ( loadLevelFromString ) where
+module Load ( loadLevelFromString, loadLevelFromFile ) where
+
+import System.IO
 
 import Game
 
@@ -66,4 +68,14 @@ loadLevelFromString str = do -- ([String], a) accumulating warnings
     readStr :: String -> Coord -> ([String], InProgressLevel)
     readStr [] _  = ([], (Nothing, [], [], []))
     readStr (c:cs) loc = readStr cs (nextCoord loc c) >>= readCellChar loc c
+
+
+-- load level from contents of a file
+-- warnings are emitted to stderr
+loadLevelFromFile :: FilePath -> IO GameState
+loadLevelFromFile path = do
+  contents <- readFile path
+  let (warnings, level) = loadLevelFromString contents
+  foldl (>>) (return ()) $ map (hPutStrLn stderr . ("warning: "++)) warnings
+  return level
 
