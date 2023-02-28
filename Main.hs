@@ -1,34 +1,23 @@
 module Main where
 
+import Control.Monad
+import System.Environment
+
 import Game
+import Load
 import Terminal
 
 
--- TODO read from a file
-testLevelTiles :: [[Tile]]
-testLevelTiles =
-  [ [ Wall, Wall,  Wall,  Wall,    Wall ]
-  , [ Wall, Empty, Empty, Empty,   Wall ]
-  , [ Wall, Empty, Empty, Storage, Wall ]
-  , [ Wall, Empty, Empty, Empty,   Wall ]
-  , [ Wall, Wall,  Wall,  Wall,    Wall ]
-  ]
-testLevel :: GameState
-testLevel = GameState
-  { playerLocation = (1, 2)
-  , boxLocations = [(2, 2)]
-  , levelMap = mapFromDisplayOrderedTiles testLevelTiles
-  }
-
 main :: IO ()
 main = do
+  levelPaths <- getArgs
   interface <- setupTerminalInterface
-  gameLoop interface testLevel
+  foldl (>>) (return ()) $ map (loadLevelFromFile >=> gameLoop interface) levelPaths
 
 gameLoop :: GameInterface i => i -> GameState -> IO ()
 gameLoop interface state = do
   render interface state
-  if won state then return ()
+  if won state then putStrLn "level completed!"
   else do
     action <- getInput interface
     let newState = act action state
