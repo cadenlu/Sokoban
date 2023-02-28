@@ -1,9 +1,9 @@
-module Load where
+module Load ( loadLevelFromString ) where
 
 import Game
 
 
-
+-- all information used temporarily while building a level
 type InProgressLevel =
   ( Maybe Coord -- player location, if seen
   , [Coord] -- box locations
@@ -15,8 +15,7 @@ type InProgressLevel =
 -- [String] in results is list of warnings
 loadLevelFromString :: String -> ([String], GameState)
 loadLevelFromString str = do -- ([String], a) accumulating warnings
-  (maybePlayerLocation, boxLocations, tiles, line) <-
-    readStr str (0,0)
+  (maybePlayerLocation, boxLocations, tiles, line) <- readStr str (0,0)
 
   playerLocation <- case maybePlayerLocation of
     Just loc -> ([], loc)
@@ -27,6 +26,7 @@ loadLevelFromString str = do -- ([String], a) accumulating warnings
     , boxLocations = boxLocations
     , levelMap = mapFromDisplayOrderedTiles (line : tiles)
     }
+
   where
     -- read new cell with tiles and entities into level being built
     -- [String] in output accumulates warnings
@@ -56,10 +56,13 @@ loadLevelFromString str = do -- ([String], a) accumulating warnings
       _ -> (["Unrecognized character at " ++ show coord],
                   (player, boxes, tiles, Empty   : line))
 
+    -- coordinate of the next tile given the character read
+    -- to the right usually, wraps on newlines
     nextCoord :: Coord -> Char -> Coord
     nextCoord (x, y) '\n' = (0, y + 1)
     nextCoord (x, y) _    = (x + 1, y)
 
+    -- read a level (starting at the passed coordinate) from a string
     readStr :: String -> Coord -> ([String], InProgressLevel)
     readStr [] _  = ([], (Nothing, [], [], []))
     readStr (c:cs) loc = readStr cs (nextCoord loc c) >>= readCellChar loc c
