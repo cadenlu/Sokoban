@@ -1,5 +1,7 @@
 module Solve ( solve, solveRev ) where
 
+import Data.List
+
 import Game
 
 
@@ -45,9 +47,10 @@ solveRev startingState = solve' [] [(dynStateOf startingState, [])]
     newCachedStates :: [ReachedState] -> [ReachedState] -> ([ReachedState], [ReachedState])
     newCachedStates cached toCheck = let
       reached = toCheck >>= nextStates
-      dedupStates = deduplicateStates reached
+      sortedReached = map (\ ((player, boxes), dirs) -> ((player, sort boxes), dirs)) reached
+      dedupReached = deduplicateStates sortedReached
       newCached = toCheck ++ cached
-      newlyReached = filter (not . (`elem` (map fst newCached)) . fst) reached
+      newlyReached = filter (not . (`elem` (map fst newCached)) . fst) dedupReached
       in (newCached, newlyReached)
 
     -- a state formed by combining the given dynamic state with the static state of the game
